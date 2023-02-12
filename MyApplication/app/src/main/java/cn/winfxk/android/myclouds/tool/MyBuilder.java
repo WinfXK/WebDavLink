@@ -21,13 +21,12 @@ import cn.winfxk.android.myclouds.R;
 @SuppressWarnings("deprecation")
 @SuppressLint({ "InflateParams", "NewApi" })
 public class MyBuilder {
-	private Dialog dialog;
-	private LinearLayout container;
-	private TextView titleTv;
-	private TextView msgTv;
-	private Button negBtn;
-	private Button posBtn;
-	private ImageView img_line;
+	private final Dialog dialog;
+	private final TextView titleTv;
+	private final TextView msgTv;
+	private final Button negBtn;
+	private final Button posBtn;
+	private final ImageView img_line;
 	private boolean showTitle = false;
 	private boolean showMsg = false;
 	private boolean showPosBtn = false;
@@ -35,17 +34,17 @@ public class MyBuilder {
 
 	public MyBuilder(Activity context) {
 		View view = View.inflate(context, R.layout.view_alertdialog, null);
-		container = (LinearLayout) view.findViewById(R.id.container);
-		titleTv = (TextView) view.findViewById(R.id.txt_title);
+		LinearLayout container = view.findViewById(R.id.container);
+		titleTv = view.findViewById(R.id.txt_title);
 		titleTv.setVisibility(View.GONE);
 		titleTv.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
-		msgTv = (TextView) view.findViewById(R.id.txt_msg);
+		msgTv = view.findViewById(R.id.txt_msg);
 		msgTv.setVisibility(View.GONE);
-		negBtn = (Button) view.findViewById(R.id.btn_neg);
+		negBtn = view.findViewById(R.id.btn_neg);
 		negBtn.setVisibility(View.GONE);
-		posBtn = (Button) view.findViewById(R.id.btn_pos);
+		posBtn = view.findViewById(R.id.btn_pos);
 		posBtn.setVisibility(View.GONE);
-		img_line = (ImageView) view.findViewById(R.id.img_line);
+		img_line = view.findViewById(R.id.img_line);
 		img_line.setVisibility(View.GONE);
 		dialog = new Dialog(context, R.style.AlertDialogStyle);
 		dialog.setContentView(view);
@@ -57,7 +56,7 @@ public class MyBuilder {
 
 	public MyBuilder setTitle(String title) {
 		showTitle = true;
-		if (title != null && "".equals(title))
+		if ("".equals(title))
 			title = "标题";
 		if (Build.VERSION.SDK_INT >= 24)
 			titleTv.setText(Html.fromHtml("<b>" + title + "</b>", 1));
@@ -68,7 +67,7 @@ public class MyBuilder {
 
 	public MyBuilder setMsg(String msg) {
 		showMsg = true;
-		if (msg != null && "".equals(msg)) {
+		if ("".equals(msg)) {
 			msgTv.setText("内容");
 		} else
 			msgTv.setText(msg);
@@ -86,13 +85,10 @@ public class MyBuilder {
 			posBtn.setText("确定");
 		} else
 			posBtn.setText(text);
-		posBtn.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (listener != null)
-					listener.onClick(v);
-				dialog.dismiss();
-			}
+		posBtn.setOnClickListener(v -> {
+			if (listener != null)
+				listener.onClick(v);
+			dialog.dismiss();
 		});
 		return this;
 	}
@@ -104,13 +100,10 @@ public class MyBuilder {
 		} else
 			negBtn.setText(text);
 		negBtn.setTextColor(0xffee0000);
-		negBtn.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (listener != null)
-					listener.onClick(v);
-				dialog.dismiss();
-			}
+		negBtn.setOnClickListener(v -> {
+			if (listener != null)
+				listener.onClick(v);
+			dialog.dismiss();
 		});
 		return this;
 	}
@@ -128,12 +121,7 @@ public class MyBuilder {
 			posBtn.setText("确定");
 			posBtn.setVisibility(View.VISIBLE);
 			posBtn.setBackgroundResource(R.drawable.alertdialog_single_selector);
-			posBtn.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					dialog.dismiss();
-				}
-			});
+			posBtn.setOnClickListener(v -> dialog.dismiss());
 		}
 		if (showPosBtn && showNegBtn) {
 			posBtn.setVisibility(View.VISIBLE);

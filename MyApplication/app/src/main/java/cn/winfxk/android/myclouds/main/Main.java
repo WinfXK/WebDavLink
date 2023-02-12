@@ -31,7 +31,9 @@ import cn.winfxk.android.myclouds.MyActivity;
 import cn.winfxk.android.myclouds.Pack;
 import cn.winfxk.android.myclouds.R;
 import cn.winfxk.android.myclouds.ViewData;
+import cn.winfxk.android.myclouds.open.FileData;
 import cn.winfxk.android.myclouds.tool.MyListBuilder;
+import cn.winfxk.android.myclouds.tool.PathSelect;
 import cn.winfxk.android.myclouds.tool.Toast;
 import cn.winfxk.android.myclouds.tool.Tool;
 
@@ -40,8 +42,7 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
     protected TextView FilePathView;
     protected MyHandler handler;
     protected SweetAlertDialog Filereload;
-    protected File cacheFile;
-    protected String cachePath;
+    protected FileData fileData = new FileData();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +83,13 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
             case 4:
                 adapter.reload(adapter.Path);
                 break;
+            case 1:
+                PathSelect select = new PathSelect(this, true);
+                select.setConfirmListener(list -> {
+                    System.out.println(list);
+                });
+                select.show();
+                break;
         }
     }
 
@@ -92,10 +100,8 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        if (!(view.getTag() instanceof ViewData)) return;
-        ViewData data = (ViewData) view.getTag();
-        if (data.Tag instanceof DavResource) {
-            DavResource dav = (DavResource) data.Tag;
+        if (!(view.getTag() instanceof ViewData data)) return;
+        if (data.Tag instanceof DavResource dav) {
             String path = dav.getPath();
             if (path != null && path.contains("/dav/"))
                 path = path.substring(path.indexOf("/dav/") + 5);
@@ -125,35 +131,37 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
 
     private boolean Filemake(View view, String path, DavResource dav) {
         MyListBuilder builder = new MyListBuilder(this);
-        cachePath = path;
+        fileData.cachePath = path;
         int lastIndexOf = path.lastIndexOf("/");
-        String FileName = path.substring(lastIndexOf + (lastIndexOf < path.length() ? 1 : 0));
+        path.length();
+        String FileName = path.substring(lastIndexOf + 1);
         builder.addSheetItem("打开", which -> {
             if (dav.isDirectory()) {
                 adapter.reload(path);
                 return;
             }
             String cachePath = Pack.CacheFileConfig.getString(path);
+            fileData.FileEx = Tool.getExtension(path);
             if (!Pack.CacheFileConfig.containsKey(path) || cachePath == null || !new File(cachePath).exists()) {
                 StringBuilder Filename = new StringBuilder(Tool.getDate() + " " + Tool.getTime() + Tool.getRandString());
-                cacheFile = new File(getCacheDir(), Filename + ".png");
-                while (cacheFile.exists()) {
+                fileData.cacheFile = new File(getCacheDir(), Filename + fileData.FileEx);
+                while (fileData.cacheFile.exists()) {
                     Filename.append(Tool.getRandString());
-                    cacheFile = new File(getCacheDir(), Filename + ".png");
+                    fileData.cacheFile = new File(getCacheDir(), Filename + fileData.FileEx);
                 }
                 new Thread(() -> {
                     handler.sendEmptyMessage(1);
                     try {
                         InputStream stream = Pack.sardine.get(Pack.ServerLink + path);
-                        FileOutputStream fos = new FileOutputStream(cacheFile);
-                        Log.i("Tag", cacheFile.toString());
+                        FileOutputStream fos = new FileOutputStream(fileData.cacheFile);
+                        Log.i("Tag", fileData.cacheFile.toString());
                         int len = 0;
                         byte[] buf = new byte[1024];
                         while ((len = stream.read(buf)) != -1)
                             fos.write(buf, 0, len);
                         stream.close();
                         fos.close();
-                        Pack.CacheFileConfig.set(path, cacheFile);
+                        Pack.CacheFileConfig.set(path, fileData.cacheFile.getAbsolutePath());
                         Pack.CacheFileConfig.save();
                         handler.sendEmptyMessage(3);
                     } catch (Exception e) {
@@ -169,7 +177,8 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
                     }
                 }).start();
             } else {
-                cacheFile = new File(Pack.CacheFileConfig.getString(path));
+                fileData.cacheFile = new File(Pack.CacheFileConfig.getString(path));
+                handler.sendEmptyMessage(3);
             }
         });
         builder.addSheetItem("重命名", which -> {
@@ -240,6 +249,7 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
             }
         }).start());
         builder.addSheetItem("下载", which -> {
+
         });
         builder.show();
         return true;

@@ -122,6 +122,7 @@ public class MainActivity extends MyActivity {
         Pack.sardine.setCredentials(User, Pass);
         try {
             List<DavResource> resources = Pack.sardine.list(Pack.ServerLink);
+            if (resources == null) throw new RuntimeException("登陆验证失败！");
         } catch (Exception e) {
             e.printStackTrace();
             Message msg = new Message();

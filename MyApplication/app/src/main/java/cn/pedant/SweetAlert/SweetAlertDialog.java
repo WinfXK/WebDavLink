@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.Transformation;
@@ -19,8 +18,6 @@ import android.widget.TextView;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
 
-import java.util.List;
-
 import cn.winfxk.android.myclouds.R;
 
 @SuppressLint("NewApi")
@@ -28,13 +25,13 @@ import cn.winfxk.android.myclouds.R;
 public class SweetAlertDialog extends Dialog implements View.OnClickListener {
     private Activity context;
     private View mDialogView;
-    private AnimationSet mModalInAnim;
-    private AnimationSet mModalOutAnim;
-    private Animation mOverlayOutAnim;
-    private Animation mErrorInAnim;
-    private AnimationSet mErrorXInAnim;
-    private AnimationSet mSuccessLayoutAnimSet;
-    private Animation mSuccessBowAnim;
+    private final AnimationSet mModalInAnim;
+    private final AnimationSet mModalOutAnim;
+    private final Animation mOverlayOutAnim;
+    private final Animation mErrorInAnim;
+    private final AnimationSet mErrorXInAnim;
+    private final AnimationSet mSuccessLayoutAnimSet;
+    private final Animation mSuccessBowAnim;
     private TextView mTitleTextView;
     private TextView mContentTextView;
     private String mTitleText;
@@ -55,7 +52,7 @@ public class SweetAlertDialog extends Dialog implements View.OnClickListener {
     private ImageView mCustomImage;
     private Button mConfirmButton;
     private Button mCancelButton;
-    private ProgressHelper mProgressHelper;
+    private final ProgressHelper mProgressHelper;
     private FrameLayout mWarningFrame;
     private OnSweetClickListener mCancelClickListener;
     private OnSweetClickListener mConfirmClickListener;
@@ -107,15 +104,6 @@ public class SweetAlertDialog extends Dialog implements View.OnClickListener {
         mAlertType = alertType;
         mErrorInAnim = OptAnimationLoader.loadAnimation(getContext(), R.anim.error_frame_in);
         mErrorXInAnim = (AnimationSet) OptAnimationLoader.loadAnimation(getContext(), R.anim.error_x_in);
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1) {
-            List<Animation> childAnims = mErrorXInAnim.getAnimations();
-            int idx = 0;
-            for (; idx < childAnims.size(); idx++)
-                if (childAnims.get(idx) instanceof AlphaAnimation)
-                    break;
-            if (idx < childAnims.size())
-                childAnims.remove(idx);
-        }
         mSuccessBowAnim = OptAnimationLoader.loadAnimation(getContext(), R.anim.success_bow_roate);
         mSuccessLayoutAnimSet = (AnimationSet) OptAnimationLoader.loadAnimation(getContext(),
                 R.anim.success_mask_layout);

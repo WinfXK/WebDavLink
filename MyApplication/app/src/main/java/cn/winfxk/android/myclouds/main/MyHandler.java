@@ -26,7 +26,7 @@ public class MyHandler extends Handler {
         switch (msg.what) {
             case 3:
                 Intent intent = null;
-                switch (Tool.getExtension(activity.cacheFile.getName())) {
+                switch (activity.fileData.FileEx) {
                     case "image":
                         intent = new Intent(activity, OpenImage.class);
                         break;
@@ -38,8 +38,8 @@ public class MyHandler extends Handler {
                     return;
                 }
                 Bundle data = new Bundle();
-                data.putString("File", activity.cacheFile.getAbsolutePath());
-                data.putString("Path", activity.cachePath);
+                data.putString("File", activity.fileData.cacheFile.getAbsolutePath());
+                data.putString("Path", activity.fileData.cachePath);
                 intent.putExtra("Data", data);
                 activity.startActivity(intent);
                 break;

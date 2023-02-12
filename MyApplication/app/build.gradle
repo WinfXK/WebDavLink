@@ -3,18 +3,22 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 31
 
     defaultConfig {
         applicationId "cn.winfxk.android.myclouds"
         minSdk 23
-        targetSdk 32
+        targetSdk 31
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildToolsVersion '32.0.0'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_16
+        targetCompatibility JavaVersion.VERSION_16
+    }
 }
 dependencies {
     implementation 'com.github.wangjiegulu:rfab:2.0.0'
