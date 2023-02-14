@@ -22,7 +22,7 @@ import cn.winfxk.android.myclouds.tool.Toast;
 import cn.winfxk.android.myclouds.tool.Tool;
 
 public class FileAdapter extends BaseAdapter {
-    private Main activity;
+    private final Main activity;
     protected transient boolean host = false;
     public transient List<DavResource> list = new ArrayList<>();
     public String Path;
@@ -59,15 +59,15 @@ public class FileAdapter extends BaseAdapter {
             data.checkBox1 = view.findViewById(R.id.checkBox1);
             view.setTag(data);
         } else data = (ViewData) view.getTag();
-        DavResource dav = list.get(i);
         if (list.size() <= 0) {
             data.textView1.setText("目录为空！");
-            data.textView2.setText("");
-            data.imageView1.setImageResource(R.drawable.dir_ico);
+            data.textView2.setText("点击返回上级");
+            data.imageView1.setImageResource(R.drawable.back_dir);
             data.imageView1.setContentDescription("目录为空！");
             data.Tag = Path;
             return view;
         }
+        DavResource dav = list.get(i);
         if (Path != null && !Path.isEmpty() && i == 0) {
             data.textView1.setText("返回上级");
             data.textView2.setText("");

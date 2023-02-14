@@ -43,6 +43,7 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
     protected MyHandler handler;
     protected SweetAlertDialog Filereload;
     protected FileData fileData = new FileData();
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,7 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
         RapidFloatingActionLayout rfaLayout = findViewById(R.id.activity_main_rfal);
         RapidFloatingActionButton rfaBtn = findViewById(R.id.activity_main_rfab);
         RapidFloatingActionContentLabelList rfaContent = new RapidFloatingActionContentLabelList(this);
-        ListView listView = findViewById(R.id.listView1);
+        listView = findViewById(R.id.listView1);
         listView.setOnItemLongClickListener(this);
         listView.setOnItemClickListener(this);
         listView.setAdapter(adapter = new FileAdapter(this));
@@ -71,6 +72,7 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
     @Override
     public void onRFACItemLabelClick(int position, RFACLabelItem item) {
         Intent intent;
+        PathSelect select;
         switch (position) {
             case 3:
                 intent = new Intent(this, MainActivity.class);
@@ -84,13 +86,24 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
                 adapter.reload(adapter.Path);
                 break;
             case 1:
-                PathSelect select = new PathSelect(this, true);
+                select = new PathSelect(this, true);
                 select.setConfirmListener(list -> {
                     System.out.println(list);
                 });
                 select.show();
                 break;
+            case 0:
+                select = new PathSelect(this, false, null, true, null);
+                select.setTitle("请选择想要上传的文件.");
+                select.setConfirmListener(this::UploadFile);
+                select.setCancelListener(list -> Toast.makeText(this, "取消选择...").show());
+                select.show();
+                break;
         }
+    }
+
+    private void UploadFile(List<File> list) {
+
     }
 
     @Override

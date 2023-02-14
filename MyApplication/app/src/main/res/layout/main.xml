@@ -5,6 +5,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+    <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/login_backg"
+            android:contentDescription="@string/app_name"
+            android:padding="0dp"
+            android:id="@+id/backg"
+            android:scaleType="fitXY"
+            android:layout_marginTop="0dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="0dp" />
+
     <TextView
             android:layout_width="match_parent"
             android:layout_height="30dp"
@@ -28,20 +41,8 @@
             android:id="@+id/listView1"
             android:verticalSpacing="10dp"
             android:layout_below="@+id/textView1"
-            android:layout_height="match_parent" >
-    </ListView>
-    <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/login_backg"
-            android:contentDescription="@string/app_name"
-            android:padding="0dp"
-            android:id="@+id/backg"
-            android:scaleType="fitXY"
-            android:layout_marginTop="0dp"
-            android:layout_marginStart="0dp"
-            android:layout_marginEnd="0dp"
-            android:layout_marginBottom="0dp" />
+            android:layout_height="match_parent"></ListView>
+
     <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
             android:id="@+id/activity_main_rfal"
             android:layout_width="match_parent"

@@ -3,6 +3,7 @@ package cn.winfxk.android.myclouds.tool;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Environment;
+import android.os.Message;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -12,9 +13,11 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,7 +36,7 @@ public class PathSelect extends Dialog implements View.OnClickListener, AdapterV
     /**
      * 用于显示文件路径的TextView
      */
-    private final TextView title;
+    private final TextView PathTextView, TitleTextView;
     /**
      * 两个按钮
      */
@@ -56,10 +59,13 @@ public class PathSelect extends Dialog implements View.OnClickListener, AdapterV
     private final List<File> list = new ArrayList<>();
     private final Adapter adapter;
     private final String FileName;
+    private String Title = "";
+    private RelativeLayout.LayoutParams params;
 
     public PathSelect(Context context) {
         this(context, false, BaseFile, true, null);
     }
+
 
     /**
      * @param context 界面
@@ -84,11 +90,13 @@ public class PathSelect extends Dialog implements View.OnClickListener, AdapterV
         this.context = context;
         setCancelable(true);
         setCanceledOnTouchOutside(false);
-        title = findViewById(R.id.textView1);
+        PathTextView = findViewById(R.id.textView1);
         ListView listView = findViewById(R.id.listView1);
         Confirm = findViewById(R.id.button1);
         Cancel = findViewById(R.id.button2);
         editText = findViewById(R.id.editText1);
+        TitleTextView = findViewById(R.id.textView2);
+        params = (RelativeLayout.LayoutParams) TitleTextView.getLayoutParams();
         Confirm.setOnClickListener(this);
         Cancel.setOnClickListener(this);
         listView.setOnItemClickListener(this);
@@ -102,6 +110,24 @@ public class PathSelect extends Dialog implements View.OnClickListener, AdapterV
         this.Check = Check;
         listView.setAdapter(adapter = new Adapter());
         this.FileName = FileName;
+    }
+
+    @Override
+    public void setTitle(int titleId) {
+        setTitle(context.getString(titleId));
+    }
+
+    @Override
+    public void setTitle(@Nullable CharSequence title) {
+        if (title == null || title.toString().isEmpty()) {
+            TitleTextView.setText("");
+            Title = null;
+        } else {
+            this.Title = title.toString();
+            TitleTextView.setText(title);
+        }
+        if (isShowing())
+            reloadTitleView();
     }
 
     @Override
@@ -124,6 +150,28 @@ public class PathSelect extends Dialog implements View.OnClickListener, AdapterV
             dismiss();
         } else if (ID == R.id.checkBox1)
             onCheched((CheckBox) view);
+    }
+
+    private void reloadTitleView() {
+        if (Title == null || Title.toString().isEmpty()) {
+            params.height = 0;
+            TitleTextView.setText("");
+            Title = null;
+        } else {
+            params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            TitleTextView.setText(Title);
+        }
+        TitleTextView.setLayoutParams(params);
+    }
+
+    @Override
+    public void show() {
+        reloadTitleView();
+        super.show();
+    }
+
+    public String getTitle() {
+        return Title;
     }
 
     @Override
@@ -155,6 +203,12 @@ public class PathSelect extends Dialog implements View.OnClickListener, AdapterV
                 s.append((s.length() == 0) ? "" : ";").append(file.getAbsolutePath());
             editText.setText(s.toString());
         }
+    }
+
+    @Deprecated
+    @Override
+    public void setCancelMessage(@Nullable Message msg) {
+        super.setCancelMessage(msg);
     }
 
     @Override
@@ -219,7 +273,14 @@ public class PathSelect extends Dialog implements View.OnClickListener, AdapterV
                 return view;
             }
             data.file = file1;
+            data.box.setEnabled(true);
             data.box.setChecked(list.contains(file1));
+            for (File file : list)
+                if (!data.file.getAbsolutePath().equals(file.getAbsolutePath()) && data.file.getAbsolutePath().contains(file.getAbsolutePath())) {
+                    data.box.setEnabled(false);
+                    data.box.setChecked(true);
+                    break;
+                }
             data.icon.setContentDescription(file1.getName());
             data.icon.setImageResource(file1.isDirectory() ? R.drawable.dir_ico : Tool.FileIcon(file1.getName()));
             data.Title.setText(file1.getName());
@@ -263,7 +324,7 @@ public class PathSelect extends Dialog implements View.OnClickListener, AdapterV
     private void setPathString(File file) {
         if (file == null) return;
         String string = file.getAbsolutePath().replace(BaseFile.getAbsolutePath(), "");
-        title.setText(string.isEmpty() ? "/" : string);
+        PathTextView.setText(string.isEmpty() ? "/" : string);
     }
 
     public void setCancelText(String Text) {

@@ -11,4 +11,5 @@
     <string name="setting">系统设置</string>
     <string name="rootFile">根目录</string>
     <string name="input_file_name">请输入想要保存的文件名称</string>
+    <string name="back">返回</string>
 </resources>
