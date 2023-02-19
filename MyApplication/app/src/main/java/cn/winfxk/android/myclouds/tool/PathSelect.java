@@ -60,7 +60,7 @@ public class PathSelect extends Dialog implements View.OnClickListener, AdapterV
     private final Adapter adapter;
     private final String FileName;
     private String Title = "";
-    private RelativeLayout.LayoutParams params;
+    private final RelativeLayout.LayoutParams params;
 
     public PathSelect(Context context) {
         this(context, false, BaseFile, true, null);
@@ -152,8 +152,11 @@ public class PathSelect extends Dialog implements View.OnClickListener, AdapterV
             onCheched((CheckBox) view);
     }
 
+    /**
+     * 更新标题状态，如果没有标题将会隐藏
+     */
     private void reloadTitleView() {
-        if (Title == null || Title.toString().isEmpty()) {
+        if (Title == null || Title.isEmpty()) {
             params.height = 0;
             TitleTextView.setText("");
             Title = null;
@@ -170,6 +173,10 @@ public class PathSelect extends Dialog implements View.OnClickListener, AdapterV
         super.show();
     }
 
+    /**
+     * 返回对话框标题
+     * @return
+     */
     public String getTitle() {
         return Title;
     }
@@ -186,6 +193,10 @@ public class PathSelect extends Dialog implements View.OnClickListener, AdapterV
         onCheched(data.box);
     }
 
+    /**
+     * 选中目录/文件处理方法
+     * @param view
+     */
     public void onCheched(CheckBox view) {
         Data data = (Data) view.getTag();
         if (view.isChecked()) {
@@ -197,12 +208,24 @@ public class PathSelect extends Dialog implements View.OnClickListener, AdapterV
                 editText.setText(data.file.getAbsolutePath());
             list.add(data.file);
         } else list.remove(data.file);
-        if (!Model) {
+        if (!Model && !isParent(data.file)) {
             StringBuilder s = new StringBuilder();
             for (File file : list)
                 s.append((s.length() == 0) ? "" : ";").append(file.getAbsolutePath());
             editText.setText(s.toString());
         }
+    }
+
+    /**
+     * 检索父目录是否已被选中
+     * @param file
+     * @return
+     */
+    private boolean isParent(File file) {
+        for (File file1 : list)
+            if (file.getAbsolutePath().equals(file1.getAbsolutePath()) || file.getAbsolutePath().contains(file1.getAbsolutePath()))
+                return true;
+        return false;
     }
 
     @Deprecated
@@ -211,6 +234,14 @@ public class PathSelect extends Dialog implements View.OnClickListener, AdapterV
         super.setCancelMessage(msg);
     }
 
+    /**
+     * 长按也能调用选中事件
+     * @param adapterView
+     * @param view
+     * @param i
+     * @param l
+     * @return
+     */
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
         if (Model) return false;
@@ -218,6 +249,9 @@ public class PathSelect extends Dialog implements View.OnClickListener, AdapterV
         return true;
     }
 
+    /**
+     * 处理文件列表
+     */
     private class Adapter extends BaseAdapter {
         private List<File> files;
 
@@ -297,13 +331,15 @@ public class PathSelect extends Dialog implements View.OnClickListener, AdapterV
             reload();
             super.notifyDataSetChanged();
         }
-
     }
 
     public interface OnClickListener {
         void onClick(List<File> list);
     }
 
+    /**
+     * 临时封装界面元素
+     */
     private static class Data implements Cloneable {
         public CheckBox box;
         public ImageView icon;
@@ -321,34 +357,64 @@ public class PathSelect extends Dialog implements View.OnClickListener, AdapterV
         }
     }
 
+    /**
+     * 设置标题显示的路径
+     * @param file
+     */
     private void setPathString(File file) {
         if (file == null) return;
         String string = file.getAbsolutePath().replace(BaseFile.getAbsolutePath(), "");
         PathTextView.setText(string.isEmpty() ? "/" : string);
     }
 
+    /**
+     * 设置取消按钮显示的文本
+     * @param Text
+     */
     public void setCancelText(String Text) {
         Cancel.setText(Text);
     }
 
+    /**
+     * 设置确认按钮显示的文本
+     * @param Text
+     */
     public void setConfirmText(String Text) {
         Confirm.setText(Text);
     }
 
+    /**
+     * 设置取消按钮的文本和事件
+     * @param Text
+     * @param cancelListener
+     */
     public void setCancel(String Text, OnClickListener cancelListener) {
         CancelListener = cancelListener;
         Cancel.setText(Text);
     }
 
+    /**
+     * 设置确认按钮的文本和事件
+     * @param Text
+     * @param confirmListener
+     */
     public void setConfirm(String Text, OnClickListener confirmListener) {
         ConfirmListener = confirmListener;
         Confirm.setText(Text);
     }
 
+    /**
+     * 设置取消按钮的事件
+     * @param cancelListener
+     */
     public void setCancelListener(OnClickListener cancelListener) {
         CancelListener = cancelListener;
     }
 
+    /**
+     * 设置确认按钮的事件
+     * @param confirmListener
+     */
     public void setConfirmListener(OnClickListener confirmListener) {
         ConfirmListener = confirmListener;
     }

@@ -4,10 +4,10 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -44,21 +44,38 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
     protected SweetAlertDialog Filereload;
     protected FileData fileData = new FileData();
     private ListView listView;
+    protected ImageButton imageButton;
+    private boolean exit = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        handler = new MyHandler(this);
         RapidFloatingActionLayout rfaLayout = findViewById(R.id.activity_main_rfal);
         RapidFloatingActionButton rfaBtn = findViewById(R.id.activity_main_rfab);
         RapidFloatingActionContentLabelList rfaContent = new RapidFloatingActionContentLabelList(this);
+        imageButton = findViewById(R.id.imageButton1);
+        handler = new MyHandler(this);
         listView = findViewById(R.id.listView1);
         listView.setOnItemLongClickListener(this);
         listView.setOnItemClickListener(this);
         listView.setAdapter(adapter = new FileAdapter(this));
         FilePathView = findViewById(R.id.textView1);
         rfaContent.setOnRapidFloatingActionContentLabelListListener(this);
+        imageButton.setOnClickListener((view) -> new Thread(() -> {
+            try {
+                if (exit) {
+                    handler.sendEmptyMessage(7);
+                } else {
+                    exit = true;
+                    handler.sendEmptyMessage(6);
+                }
+                Thread.sleep(2000);
+                exit = false;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start());
         List<RFACLabelItem> items = new ArrayList<>();
         items.add(new RFACLabelItem<Integer>().setLabel("上传文件").setResId(R.drawable.upload).setWrapper(0));
         items.add(new RFACLabelItem<Integer>().setLabel("新建文件").setResId(R.drawable.newfile).setWrapper(1));
@@ -70,35 +87,59 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
     }
 
     @Override
+    public void onBackPressed() {
+        if (adapter.host) {
+            Toast.makeText(this, "正在加载请稍后...").show();
+            return;
+        }
+        if (adapter.Path.isEmpty()) {
+            new Thread(() -> {
+                try {
+                    if (exit) {
+                        handler.sendEmptyMessage(7);
+                    } else {
+                        exit = true;
+                        handler.sendEmptyMessage(6);
+                    }
+                    Thread.sleep(2000);
+                    exit = false;
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
+        }
+        String Parent = new File(adapter.Path).getParent();
+        adapter.reload(Parent == null ? "" : Parent);
+    }
+
+    @Override
     public void onRFACItemLabelClick(int position, RFACLabelItem item) {
         Intent intent;
         PathSelect select;
         switch (position) {
-            case 3:
+            case 3 -> {
                 intent = new Intent(this, MainActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putBoolean("NoLogin", true);
                 intent.putExtra("Data", bundle);
                 startActivity(intent);
                 fileList();
-                break;
-            case 4:
-                adapter.reload(adapter.Path);
-                break;
-            case 1:
+            }
+            case 4 -> adapter.reload(adapter.Path);
+            case 1 -> {
                 select = new PathSelect(this, true);
                 select.setConfirmListener(list -> {
                     System.out.println(list);
                 });
                 select.show();
-                break;
-            case 0:
+            }
+            case 0 -> {
                 select = new PathSelect(this, false, null, true, null);
                 select.setTitle("请选择想要上传的文件.");
                 select.setConfirmListener(this::UploadFile);
                 select.setCancelListener(list -> Toast.makeText(this, "取消选择...").show());
                 select.show();
-                break;
+            }
         }
     }
 
@@ -129,10 +170,8 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-        if (!(view.getTag() instanceof ViewData)) return false;
-        ViewData data = (ViewData) view.getTag();
-        if (data.Tag instanceof DavResource) {
-            DavResource dav = (DavResource) data.Tag;
+        if (!(view.getTag() instanceof ViewData data)) return false;
+        if (data.Tag instanceof DavResource dav) {
             String path = dav.getPath();
             if (path != null && path.contains("/dav/"))
                 path = path.substring(path.indexOf("/dav/") + 5);
@@ -155,19 +194,19 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
             }
             String cachePath = Pack.CacheFileConfig.getString(path);
             fileData.FileEx = Tool.getExtension(path);
+            String RowEx = path.substring(path.lastIndexOf("."));
             if (!Pack.CacheFileConfig.containsKey(path) || cachePath == null || !new File(cachePath).exists()) {
                 StringBuilder Filename = new StringBuilder(Tool.getDate() + " " + Tool.getTime() + Tool.getRandString());
-                fileData.cacheFile = new File(getCacheDir(), Filename + fileData.FileEx);
+                fileData.cacheFile = new File(getCacheDir(), Filename + RowEx);
                 while (fileData.cacheFile.exists()) {
                     Filename.append(Tool.getRandString());
-                    fileData.cacheFile = new File(getCacheDir(), Filename + fileData.FileEx);
+                    fileData.cacheFile = new File(getCacheDir(), Filename + RowEx);
                 }
                 new Thread(() -> {
                     handler.sendEmptyMessage(1);
                     try {
                         InputStream stream = Pack.sardine.get(Pack.ServerLink + path);
                         FileOutputStream fos = new FileOutputStream(fileData.cacheFile);
-                        Log.i("Tag", fileData.cacheFile.toString());
                         int len = 0;
                         byte[] buf = new byte[1024];
                         while ((len = stream.read(buf)) != -1)
@@ -213,7 +252,7 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
                     handler.sendEmptyMessage(1);
                     String NewFilePath = path.substring(0, path.lastIndexOf("/"));
                     try {
-                        Pack.sardine.move(Pack.ServerLink + path, NewFilePath + newFileName);
+                        Pack.sardine.move(Pack.ServerLink + path, Pack.ServerLink + path + NewFilePath + newFileName);
                         Message message = new Message();
                         Bundle dataa = new Bundle();
                         dataa.putString("error", "重命名成功！！！");

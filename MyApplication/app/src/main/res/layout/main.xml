@@ -41,7 +41,7 @@
             android:id="@+id/listView1"
             android:verticalSpacing="10dp"
             android:layout_below="@+id/textView1"
-            android:layout_height="match_parent"></ListView>
+            android:layout_height="match_parent" />
 
     <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
             android:id="@+id/activity_main_rfal"
@@ -58,7 +58,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginEnd="15dp"
                 android:layout_marginBottom="15dp"
-                android:padding="8dp"
+                android:padding="10dp"
                 rfab:rfab_size="normal"
                 rfab:rfab_drawable="@drawable/rfab__drawable_rfab_default"
                 rfab:rfab_color_normal="#37474f"
@@ -68,4 +68,19 @@
                 rfab:rfab_shadow_dx="0dp"
                 rfab:rfab_shadow_dy="2dp" />
     </com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout>
+
+    <ImageButton
+            android:id="@+id/imageButton1"
+            android:layout_width="@dimen/main_imagebutton_hw"
+            android:layout_marginEnd="100dp"
+            android:layout_marginBottom="@dimen/main_imagebutton_mb"
+            android:src="@drawable/exit"
+            android:scaleType="fitCenter"
+            android:padding="18dp"
+            android:translationZ="5dp"
+            android:background="@drawable/transparency_button_background"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_height="@dimen/main_imagebutton_hw"
+            android:contentDescription="@string/back" />
 </RelativeLayout>

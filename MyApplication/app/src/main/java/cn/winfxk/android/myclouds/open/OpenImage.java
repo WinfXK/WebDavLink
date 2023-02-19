@@ -20,22 +20,27 @@ import java.io.FileNotFoundException;
 import cn.winfxk.android.myclouds.R;
 import cn.winfxk.android.myclouds.tool.Toast;
 
-public class OpenImage extends Activity implements View.OnClickListener {
-
+public class OpenImage extends Activity implements View.OnClickListener, View.OnLongClickListener {
+    private String File;
+    private Bitmap Rowimage, image;
+    private boolean row = false, isRow = false;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.open_image);
-        ImageView imageView = findViewById(R.id.imageView1);
+        imageView = findViewById(R.id.imageView1);
         TextView textView = findViewById(R.id.textView1);
         ImageButton imageButton = findViewById(R.id.imageButton1);
         imageButton.setOnClickListener(this);
+        imageButton.setOnLongClickListener(this);
         Intent intent = getIntent();
         Bundle data = intent.getBundleExtra("Data");
         textView.setText(data.getString("Path"));
         try {
-            Bitmap image = BitmapFactory.decodeStream(new FileInputStream(data.getString("File")));
+            image = BitmapFactory.decodeStream(new FileInputStream(File = data.getString("File")));
+            this.Rowimage = image;
             int width = image.getWidth();
             int height = image.getHeight();
             int MaxRow = Math.max(width, height);
@@ -45,6 +50,7 @@ public class OpenImage extends Activity implements View.OnClickListener {
             int screenHeight = point.y;
             int MaxNew = (int) (Math.max(screenWidth, screenHeight) / 1.5);
             if (MaxNew < MaxRow) {
+                isRow = true;
                 Matrix matrix = new Matrix();
                 float f = (float) MaxNew / (float) MaxRow;
                 matrix.postScale(f, f);
@@ -59,5 +65,14 @@ public class OpenImage extends Activity implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         finish();
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        if (!isRow) return false;
+        imageView.setImageBitmap(!row ? Rowimage : image);
+        Toast.makeText(this, "显示" + (!row ? "原图" : "缩放图")).show();
+        row = !row;
+        return true;
     }
 }

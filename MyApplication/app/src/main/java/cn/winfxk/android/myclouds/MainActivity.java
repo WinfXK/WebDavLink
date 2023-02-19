@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Message;
 import android.text.InputType;
 import android.view.KeyEvent;
@@ -114,6 +115,10 @@ public class MainActivity extends MyActivity {
                     Login();
             }
         }
+        Pack.ExternalStorage = new File(Environment.getExternalStorageDirectory(), "Winfxk Cloud");
+        if (!Pack.ExternalStorage.exists()) Pack.ExternalStorage.mkdirs();
+        Pack.ExternalCache = new File(Pack.ExternalStorage, "Cache");
+        if (!Pack.ExternalCache.exists()) Pack.ExternalCache.mkdirs();
     }
 
     protected void LoginThread() {
