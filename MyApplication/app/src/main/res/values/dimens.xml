@@ -4,4 +4,13 @@
     <dimen name="progress_circle_radius">34dp</dimen>
     <dimen name="main_imagebutton_mb">20dp</dimen>
     <dimen name="main_imagebutton_hw">55dp</dimen>
+    <dimen name="setting_layout_height">55dp</dimen>
+    <dimen name="setting_toog_button_width">100dp</dimen>
+    <dimen name="setting_item_padding">5dp</dimen>
+    <dimen name="setting_item_margin_tb">5dp</dimen>
+    <dimen name="setting_item_text_size">15sp</dimen>
+    <dimen name="setting_title_height">45dp</dimen>
+    <dimen name="setting_title_ico_padding">15dp</dimen>
+    <dimen name="setting_title_text_size">20sp</dimen>
+    <dimen name="setting_title_margin_tb">15dp</dimen>
 </resources>

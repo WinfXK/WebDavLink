@@ -22,6 +22,7 @@
             android:theme="@style/Theme.MyApplication">
         <activity android:name=".open.OpenImage" />
         <activity android:name=".main.Main" />
+        <activity android:name=".setting.Setting" />
         <activity
                 android:name=".MainActivity"
                 android:exported="true">

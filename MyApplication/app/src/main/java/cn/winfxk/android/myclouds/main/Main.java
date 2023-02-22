@@ -32,6 +32,7 @@ import cn.winfxk.android.myclouds.Pack;
 import cn.winfxk.android.myclouds.R;
 import cn.winfxk.android.myclouds.ViewData;
 import cn.winfxk.android.myclouds.open.FileData;
+import cn.winfxk.android.myclouds.setting.Setting;
 import cn.winfxk.android.myclouds.tool.MyListBuilder;
 import cn.winfxk.android.myclouds.tool.PathSelect;
 import cn.winfxk.android.myclouds.tool.Toast;
@@ -117,6 +118,9 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
         Intent intent;
         PathSelect select;
         switch (position) {
+            //更新列表
+            case 4 -> adapter.reload(adapter.Path);
+            //切换用户
             case 3 -> {
                 intent = new Intent(this, MainActivity.class);
                 Bundle bundle = new Bundle();
@@ -125,7 +129,11 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
                 startActivity(intent);
                 fileList();
             }
-            case 4 -> adapter.reload(adapter.Path);
+            case 2 -> {
+                intent = new Intent(this, Setting.class);
+                startActivity(intent);
+            }
+            //新建文件夹
             case 1 -> {
                 select = new PathSelect(this, true);
                 select.setConfirmListener(list -> {
@@ -133,6 +141,7 @@ public class Main extends MyActivity implements RapidFloatingActionContentLabelL
                 });
                 select.show();
             }
+            //上传文件
             case 0 -> {
                 select = new PathSelect(this, false, null, true, null);
                 select.setTitle("请选择想要上传的文件.");

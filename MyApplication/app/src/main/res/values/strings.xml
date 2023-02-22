@@ -12,4 +12,6 @@
     <string name="rootFile">根目录</string>
     <string name="input_file_name">请输入想要保存的文件名称</string>
     <string name="back">返回</string>
+    <string name="setting_item_imageview_icon">文件列表显示已缓存图片图标</string>
+    <string name="setting_item_automatic_login">启动后自动登录</string>
 </resources>

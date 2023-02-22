@@ -10,4 +10,5 @@
     <color name="success_stroke_color">#A5DC86</color>
     <color name="light_grey">#aaaaaa</color>
     <color name="transparency_button_backg">#22000000</color>
+    <color name="setting_item_backg">#55ffffff</color>
 </resources>
